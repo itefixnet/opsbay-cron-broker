@@ -5,6 +5,13 @@ Param(
   [int]$PollInterval = 5
 )
 
+# Gather system information for headers
+$NodeHostname = try { [System.Net.Dns]::GetHostName() } catch { "unknown" }
+$NodeOS = try { (Get-CimInstance -ClassName Win32_OperatingSystem).Caption } catch { $env:OS }
+$NodeArch = try { $env:PROCESSOR_ARCHITECTURE } catch { "unknown" }
+$NodeKernel = try { (Get-CimInstance -ClassName Win32_OperatingSystem).Version } catch { "unknown" }
+$NodeUptime = try { (Get-CimInstance -ClassName Win32_OperatingSystem).LastBootUpTime.ToString("yyyy-MM-dd HH:mm:ss") } catch { "unknown" }
+
 function HmacB64([string]$data) {
   $key = [Text.Encoding]::UTF8.GetBytes($SECRET)
   $bytes = [Text.Encoding]::UTF8.GetBytes($data)
@@ -17,7 +24,17 @@ while ($true) {
   $ts = [int][double]::Parse((Get-Date -UFormat %s))
   $sig = HmacB64("$ts$NODE_ID")
 
-  $job = Invoke-RestMethod -Uri "$API/fetch?node=$NODE_ID" -Headers @{ "X-Time" = $ts; "X-Auth" = $sig } -Method GET -ErrorAction SilentlyContinue
+  $headers = @{ 
+    "X-Time" = $ts
+    "X-Auth" = $sig
+    "X-Node-Hostname" = $NodeHostname
+    "X-Node-OS" = $NodeOS
+    "X-Node-Arch" = $NodeArch
+    "X-Node-Kernel" = $NodeKernel
+    "X-Node-Uptime" = $NodeUptime
+  }
+
+  $job = Invoke-RestMethod -Uri "$API/fetch?node=$NODE_ID" -Headers $headers -Method GET -ErrorAction SilentlyContinue
 
   if (-not $job) { Start-Sleep -Seconds $PollInterval; continue }
 
@@ -60,7 +77,16 @@ while ($true) {
     __auth = @{ time = "$ts"; sig = "$sig" }
   } + (ConvertFrom-Json $payload) | ConvertTo-Json -Depth 6
 
-  Invoke-RestMethod -Uri "$API/result" -Method POST -ContentType "application/json" -Body $body -ErrorAction SilentlyContinue | Out-Null
+  $headers = @{
+    "Content-Type" = "application/json"
+    "X-Node-Hostname" = $NodeHostname
+    "X-Node-OS" = $NodeOS
+    "X-Node-Arch" = $NodeArch
+    "X-Node-Kernel" = $NodeKernel
+    "X-Node-Uptime" = $NodeUptime
+  }
+
+  Invoke-RestMethod -Uri "$API/result" -Method POST -Headers $headers -Body $body -ErrorAction SilentlyContinue | Out-Null
 
   Start-Sleep -Seconds $PollInterval
 }

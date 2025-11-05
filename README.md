@@ -8,10 +8,11 @@ However, **opsbay-cron-broker can also be used independently** as a standalone, 
 
 ---
 
-A tiny, **shell2http**-based job broker for centralizing cron/Cronicle operations across **multiple nodes**, with **HMAC authentication** and an **allowed node list**.
+A tiny, **shell2http**-based job broker for centralizing cron/Cronicle operations across **multiple nodes**, with **HMAC authentication**, **node information headers**, and an **allowed node list**.
 
 - Central API (`/queue`, `/fetch`, `/result`)
-- Workers poll, execute, and return results
+- Workers poll, execute, and return results  
+- **Node information tracking** (hostname, OS, architecture, kernel, uptime)
 - Mixed OS support (Linux, macOS, BSD, Windows via Git Bash/Cygwin/MSYS2/WSL)
 - No heavy runtime: just `shell2http`, `jq`, `openssl`, `curl`/PowerShell
 

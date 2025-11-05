@@ -8,6 +8,15 @@ SECRET="${SECRET:-CHANGE_ME}"
 POLL_INTERVAL="${POLL_INTERVAL:-5}"  # seconds
 # ==================
 
+# ===== NODE INFO =====
+# Gather system information for headers
+NODE_HOSTNAME="$(hostname 2>/dev/null || echo 'unknown')"
+NODE_OS="$(uname -s 2>/dev/null || echo 'unknown')"
+NODE_ARCH="$(uname -m 2>/dev/null || echo 'unknown')"
+NODE_KERNEL="$(uname -r 2>/dev/null || echo 'unknown')"
+NODE_UPTIME="$(uptime -s 2>/dev/null || echo 'unknown')"
+# ======================
+
 hmac_b64() {
   printf '%s' "$1" | openssl dgst -sha256 -hmac "$SECRET" -binary | base64
 }
@@ -19,6 +28,11 @@ while true; do
   job="$(curl -s \
       -H "X-Time: $ts" \
       -H "X-Auth: $sig" \
+      -H "X-Node-Hostname: $NODE_HOSTNAME" \
+      -H "X-Node-OS: $NODE_OS" \
+      -H "X-Node-Arch: $NODE_ARCH" \
+      -H "X-Node-Kernel: $NODE_KERNEL" \
+      -H "X-Node-Uptime: $NODE_UPTIME" \
       "$API/fetch?node=$NODE_ID" || true)"
 
   if [[ -z "$job" || "$job" == "null" ]]; then
@@ -58,6 +72,11 @@ while true; do
 
   curl -s -X POST "$API/result" \
     -H "Content-Type: application/json" \
+    -H "X-Node-Hostname: $NODE_HOSTNAME" \
+    -H "X-Node-OS: $NODE_OS" \
+    -H "X-Node-Arch: $NODE_ARCH" \
+    -H "X-Node-Kernel: $NODE_KERNEL" \
+    -H "X-Node-Uptime: $NODE_UPTIME" \
     -d "$(jq -n --arg ts "$ts" --arg sig "$sig" --argjson payload "$body" \
           '$payload + {__auth: {time: $ts, sig: $sig}}')" >/dev/null 2>&1
 

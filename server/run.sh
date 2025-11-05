@@ -27,6 +27,7 @@ echo "ALLOWED_NODES=$ALLOWED_NODES"
 
 # shell2http must be installed and in PATH
 exec shell2http \
+  -cgi \
   -port "$PORT" \
   /queue   ./queue.sh \
   /fetch   ./fetch.sh \
