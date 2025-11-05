@@ -15,4 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag opsbay-cron-broker:**${{ github.sha }}**
+      run: |
+        IMAGE_TAG=${GITHUB_SHA::7}
+        docker build . --file Dockerfile --tag opsbay-cron-broker:$IMAGE_TAG
