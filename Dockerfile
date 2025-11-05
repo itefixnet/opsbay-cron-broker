@@ -3,13 +3,12 @@
 # ------------------------------
 FROM alpine:3.20 AS builder
 
-ARG SHELL2HTTP_VERSION=1.15.0
+ARG SHELL2HTTP_VERSION=1.17.0
 RUN apk add --no-cache curl \
  && curl -L -o /shell2http.tar.gz \
-      https://github.com/msoap/shell2http/releases/download/${SHELL2HTTP_VERSION}/shell2http_${SHELL2HTTP_VERSION}_linux_amd64.tar.gz \
+      https://github.com/msoap/shell2http/releases/download/v${SHELL2HTTP_VERSION}/shell2http_${SHELL2HTTP_VERSION}_linux_amd64.tar.gz \
  && tar xf /shell2http.tar.gz \
  && mv shell2http /shell2http
-
 
 # ------------------------------
 #   Final image
