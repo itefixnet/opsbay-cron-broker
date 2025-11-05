@@ -71,6 +71,8 @@ verify_fetch() {
   local sig="${HTTP_X_AUTH:-}"
   local node="${HTTP_QUERY_NODE:-${HTTP_X_NODE:-}}"
 
+    echo "DEBUG: ts=$ts sig=$sig node=$node"
+    
   if [[ -z "$ts" || -z "$sig" || -z "$node" ]]; then
     echo '{"error":"missing fetch auth or node"}'
     return 1
