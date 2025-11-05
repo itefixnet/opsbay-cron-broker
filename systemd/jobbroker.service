@@ -1,0 +1,16 @@
+[Unit]
+Description=Opsbay Cron Broker (shell2http)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/opsbay-cron-broker/server
+EnvironmentFile=/opt/opsbay-cron-broker/server/.env
+ExecStart=/opt/opsbay-cron-broker/server/run.sh
+Restart=on-failure
+RestartSec=5
+User=opsbay
+Group=opsbay
+
+[Install]
+WantedBy=multi-user.target
