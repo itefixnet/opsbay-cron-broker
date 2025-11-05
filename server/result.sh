@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
+
+if [ -f .env ]; then
+  set -a
+  source .env
+  set +a
+else
+  echo "WARNING: .env not found. Using defaults from config.example.env or env."
+fi
+
 source ./auth.sh
 
 : "${JOB_DIR:?JOB_DIR missing}"
