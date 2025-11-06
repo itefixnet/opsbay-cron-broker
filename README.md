@@ -2,6 +2,10 @@
 
 A lightweight distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
 
+**Primarily designed for**: The **Jobs** feature of [**OpsBay**](https://opsbay.com) using [**Cronicle**](https://cronicle.org) scheduler.
+
+**Also suitable for**: Any distributed job execution system requiring secure, authenticated task delegation across multiple nodes.
+
 **Perfect for**: Infrastructure automation, CI/CD pipelines, distributed task execution, and OpsBay/Cronicle integration.
 
 ## ✨ Key Features

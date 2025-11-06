@@ -2,6 +2,10 @@
 
 A lightweight distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
 
+**Primarily designed for**: The **Jobs** feature of [**OpsBay**](https://opsbay.com) implemented through [**Cronicle**](https://cronicle.org) scheduler, enabling OpsBay to delegate job execution to multiple authenticated worker nodes.
+
+**Broadly applicable for**: Any distributed job execution system requiring secure, authenticated task delegation across multiple nodes without heavy runtime dependencies.
+
 ## 🎯 Architecture
 
 ```
@@ -208,7 +212,15 @@ jobs:
 
 ## 🤝 OpsBay Integration
 
-While designed for **[OpsBay](https://opsbay.com)** and **[Cronicle](https://cronicle.org)** integration, opsbay-cron-broker works perfectly as a standalone distributed job execution system.
+**Primary Purpose**: This project was specifically designed to support the **Jobs** feature in [**OpsBay**](https://opsbay.com) using [**Cronicle**](https://cronicle.org) as the scheduler. It enables OpsBay to:
+
+- **Delegate job execution** to multiple authenticated worker nodes
+- **Distribute workload** across infrastructure without direct SSH access
+- **Provide secure authentication** via HMAC signatures from Cronicle
+- **Track job results** and node information for operational visibility
+- **Scale job execution** horizontally across multiple environments
+
+**Standalone Capability**: While built for OpsBay/Cronicle integration, opsbay-cron-broker works perfectly as an independent distributed job execution system for any use case requiring secure, lightweight task delegation.
 
 ## 📄 License
 
