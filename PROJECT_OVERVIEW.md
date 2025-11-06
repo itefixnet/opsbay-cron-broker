@@ -1,6 +1,6 @@
 # opsbay-cron-broker
 
-A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
+A lightweight distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
 
 ## 🎯 Architecture
 
@@ -25,7 +25,7 @@ A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicl
 - No heavy dependencies
 
 ### 2. Worker Daemon (`workers/worker.sh`)
-- Bash-based worker for Unix systems
+- Bash-based worker daemon
 - Continuous polling for jobs
 - Command execution with timeout support
 - System information reporting
@@ -40,12 +40,11 @@ A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicl
 
 ## 📋 Supported Platforms
 
-### ✅ Fully Supported
 - **Linux** (all distributions)
 - **macOS** 
 - **BSD** variants
 - **WSL** (Windows Subsystem for Linux)
-- **MSYS2/Cygwin** (Windows with Unix tools)
+- **MSYS2/Cygwin** (Windows with bash tools)
 
 ### 📦 Dependencies
 - `bash` (4.0+)

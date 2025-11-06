@@ -1,6 +1,6 @@
 # opsbay-cron-broker
 
-A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
+A lightweight distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
 
 **Perfect for**: Infrastructure automation, CI/CD pipelines, distributed task execution, and OpsBay/Cronicle integration.
 
@@ -10,8 +10,7 @@ A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicl
 - **📊 Observable**: Node information tracking and comprehensive result monitoring  
 - **🛠️ Simple**: Bash-based workers, shell2http server, minimal dependencies
 - **🔄 Complete**: Job submission → execution → result retrieval workflow
-- **🖥️ Unix-Ready**: Linux, macOS, BSD, WSL support
-- **⚡ Lightweight**: No heavy runtimes, just standard Unix tools
+- **⚡ Lightweight**: No heavy runtimes, just standard tools
 
 ## 🚀 Quick Start
 

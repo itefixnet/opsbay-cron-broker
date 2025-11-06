@@ -33,14 +33,14 @@ NODE_INFO: node=testnode hostname=worker01 os=Linux arch=x86_64 kernel=6.8.0-86-
 ## Worker Implementation
 
 ### Bash Worker (workers/worker.sh)
-The bash worker collects system information using standard Unix commands:
+The bash worker collects system information using standard commands:
 - `hostname` - for hostname
 - `uname -s` - for OS name  
 - `uname -m` - for architecture
 - `uname -r` - for kernel version
 - `uptime -s` - for boot time
 
-This worker supports all Unix-like systems including Linux, macOS, BSD, and Windows via WSL/Cygwin/MSYS2.
+This worker supports all compatible systems including Linux, macOS, BSD, and Windows via WSL/Cygwin/MSYS2.
 
 ## Benefits
 
@@ -51,4 +51,4 @@ This worker supports all Unix-like systems including Linux, macOS, BSD, and Wind
 
 ## Backward Compatibility
 
-Node information headers are optional and don't affect authentication or core functionality. The system is designed for Unix-like environments and provides comprehensive node tracking capabilities.
+Node information headers are optional and don't affect authentication or core functionality. The system provides comprehensive node tracking capabilities.

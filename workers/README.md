@@ -4,7 +4,7 @@ The worker daemon polls the broker for jobs and executes them on the target node
 
 ## Bash Worker
 
-Use `worker.sh` for Unix-like systems:
+Use `worker.sh`:
 - Linux, macOS, BSD
 - Windows via WSL, Cygwin, MSYS2, Git Bash
 
