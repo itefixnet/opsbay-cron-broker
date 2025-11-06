@@ -6,14 +6,14 @@ This document describes how to configure the OpsBay Job Broker as a Cronicle plu
 
 ### 1. Install Plugin in Cronicle
 
-1. Copy `cronicle-plugin.sh` to your Cronicle plugins directory (typically `/opt/cronicle/plugins/`)
-2. Make it executable: `chmod +x /opt/cronicle/plugins/cronicle-plugin.sh`
+1. Copy `opsbay-job-broker.sh` to your Cronicle plugins directory (typically `/opt/cronicle/plugins/`)
+2. Make it executable: `chmod +x /opt/cronicle/plugins/opsbay-job-broker.sh`
 3. In Cronicle Admin → Plugins Tab, create a new plugin with these settings:
 
 **Basic Settings:**
-- **Plugin ID**: `opsbay-broker`
+- **Plugin ID**: `opsbay-job-broker`
 - **Plugin Title**: `OpsBay Job Broker`
-- **Plugin Command**: `/opt/cronicle/plugins/cronicle-plugin.sh`
+- **Plugin Command**: `/opt/cronicle/plugins/opsbay-job-broker.sh`
 
 ### 2. Plugin Parameters
 
