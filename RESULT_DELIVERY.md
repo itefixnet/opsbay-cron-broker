@@ -66,36 +66,36 @@ curl -H "X-Time: 1762404276" -H "X-Auth: <signature>" \
 }
 ```
 
-## Enhanced post.sh Client
+## Enhanced plain-job-broker.sh Client
 
-The `post.sh` client tool is a core component of opsbay-cron-broker that provides comprehensive job management capabilities:
+The `plain-job-broker.sh` client tool is a core component of opsbay-cron-broker that provides comprehensive job management capabilities:
 
 ### Submit a Job (Original Functionality)
 ```bash
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --target "node1" --command "echo hello" --timeout 30
 ```
 
 ### Check a Specific Result
 ```bash
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --check-result --node "node1" --job-id "1234567890"
 ```
 
 ### List All Results
 ```bash
-./post.sh --secret "mysecret" --url "http://server:8080" --list-results
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" --list-results
 ```
 
 ### Submit Job and Wait for Completion
 ```bash
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --target "node1" --command "echo hello" --timeout 30 --wait
 ```
 
 ### Advanced Wait Options
 ```bash
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --target "node1" --command "long-running-task" --timeout 300 --wait \
   --poll-interval 5 --max-wait 120
 ```
@@ -117,7 +117,7 @@ The `post.sh` client tool is a core component of opsbay-cron-broker that provide
 ### 1. Fire-and-Forget
 ```bash
 # Submit job, get job ID back immediately
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --target "node1" --command "backup-database" --timeout 1800
 # Output: {"status":"queued","id":"1234567890","target":"node1"}
 ```
@@ -125,7 +125,7 @@ The `post.sh` client tool is a core component of opsbay-cron-broker that provide
 ### 2. Submit and Wait
 ```bash
 # Submit job and automatically wait for completion
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --target "node1" --command "generate-report" --timeout 300 --wait
 # Output: Job submission response, then result when completed
 ```
@@ -133,14 +133,14 @@ The `post.sh` client tool is a core component of opsbay-cron-broker that provide
 ### 3. Check Later
 ```bash
 # Check result of previously submitted job
-./post.sh --secret "mysecret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" \
   --check-result --node "node1" --job-id "1234567890"
 ```
 
 ### 4. Monitor All Jobs
 ```bash
 # List all results to monitor job completion status
-./post.sh --secret "mysecret" --url "http://server:8080" --list-results
+./plain-job-broker.sh --secret "mysecret" --url "http://server:8080" --list-results
 ```
 
 ## Security
@@ -159,7 +159,7 @@ SECRET="mysecret"
 URL="http://server:8080"
 
 # Submit job
-RESPONSE=$(./post.sh --secret "$SECRET" --url "$URL" \
+RESPONSE=$(./plain-job-broker.sh --secret "$SECRET" --url "$URL" \
   --target "node1" --command "important-task" --timeout 600)
 
 JOB_ID=$(echo "$RESPONSE" | jq -r '.id')
@@ -167,7 +167,7 @@ echo "Submitted job $JOB_ID"
 
 # Poll for completion
 while true; do
-  RESULT=$(./post.sh --secret "$SECRET" --url "$URL" \
+  RESULT=$(./plain-job-broker.sh --secret "$SECRET" --url "$URL" \
     --check-result --node "node1" --job-id "$JOB_ID")
   
   if [[ "$(echo "$RESULT" | jq -r '.error // empty')" != "result not found" ]]; then
@@ -185,7 +185,7 @@ done
 # Example GitHub Actions workflow
 - name: Deploy to Node
   run: |
-    RESULT=$(./post.sh --secret "${{ secrets.BROKER_SECRET }}" \
+    RESULT=$(./plain-job-broker.sh --secret "${{ secrets.BROKER_SECRET }}" \
       --url "https://broker.example.com" \
       --target "prod-node1" --command "deploy-app v1.2.3" \
       --timeout 1800 --wait)

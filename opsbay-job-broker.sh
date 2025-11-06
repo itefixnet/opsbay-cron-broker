@@ -2,7 +2,7 @@
 
 # OpsBay Cronicle Plugin - Job Broker Client
 # Submits jobs to opsbay-cron-broker from within Cronicle
-# Based on post.sh but modified for Cronicle plugin compatibility
+# Based on plain-job-broker.sh but modified for Cronicle plugin compatibility
 
 set -euo pipefail
 
@@ -93,14 +93,15 @@ submit_job() {
                 sig: ""
             }
         }')
-    
+
     # Calculate HMAC signature
-    local auth_string="${timestamp}:${payload}"
+    raw_payload="$(printf '%s' "$payload" | jq 'del(.__auth)')"
+    local auth_string="${timestamp}${raw_payload}"
     local signature=$(hmac_sha256 "$secret" "$auth_string")
-    
+
     # Add signature to payload
     payload=$(echo "$payload" | jq --arg sig "$signature" '.["__auth"]["sig"] = $sig')
-    
+
     # Submit job
     local response
     if ! response=$(curl -s -X POST \
@@ -110,19 +111,19 @@ submit_job() {
         echo '{"complete": 1, "code": 1, "description": "Failed to submit job to broker"}' >&1
         exit 1
     fi
-    
+
     # Parse job ID from response
     local submitted_job_id
     if ! submitted_job_id=$(echo "$response" | jq -r '.id // empty'); then
         echo '{"complete": 1, "code": 1, "description": "Invalid response from broker"}' >&1
         exit 1
     fi
-    
+
     if [[ -z "$submitted_job_id" ]]; then
         echo '{"complete": 1, "code": 1, "description": "No job ID returned from broker"}' >&1
         exit 1
     fi
-    
+
     echo "$submitted_job_id"
 }
 
@@ -130,14 +131,14 @@ submit_job() {
 check_result() {
     local job_id="$1"
     local timestamp=$(date +%s)
-    local auth_string="${timestamp}:GET:/get-result:node=${target_node}&id=${job_id}"
+    local auth_string="${timestamp}${target_node}"
     local signature=$(hmac_sha256 "$secret" "$auth_string")
-    
+
     curl -s -G \
         -d "node=$target_node" \
         -d "id=$job_id" \
-        -H "X-Auth-Time: $timestamp" \
-        -H "X-Auth-Signature: $signature" \
+        -H "X-Time: $timestamp" \
+        -H "X-Auth: $signature" \
         "$broker_url/get-result"
 }
 
@@ -168,50 +169,69 @@ last_progress=0.2
 while true; do
     current_time=$(date +%s)
     elapsed=$((current_time - start_time))
-    
+
     # Check for timeout
     if [[ $elapsed -gt $max_wait ]]; then
         echo "Timeout waiting for job completion"
         echo '{"complete": 1, "code": 1, "description": "Timeout waiting for job completion"}' >&1
         exit 1
     fi
-    
+
     # Update progress based on elapsed time
     progress=$(echo "scale=2; $last_progress + (0.7 * $elapsed / $max_wait)" | bc -l 2>/dev/null || echo "$last_progress")
     if (( $(echo "$progress > 0.9" | bc -l 2>/dev/null || echo "0") )); then
         progress="0.9"
     fi
     echo "{\"progress\": $progress}" >&1
-    
+
     # Check for result
     result=$(check_result "$submitted_job_id")
-    
-    if [[ -n "$result" ]] && [[ "$result" != "null" ]]; then
-        # Parse result
-        exit_code=$(echo "$result" | jq -r '.exit_code // 1')
-        output=$(echo "$result" | jq -r '.output // ""')
-        
-        echo "Job completed with exit code: $exit_code"
-        if [[ -n "$output" ]]; then
-            echo "Job output:"
-            echo "$output"
-        fi
-        
-        # Report completion to Cronicle
-        echo '{"progress": 1.0}' >&1
-        
-        if [[ "$exit_code" == "0" ]]; then
-            echo '{"complete": 1, "code": 0, "description": "Job completed successfully"}' >&1
-        else
-            description="Job failed with exit code $exit_code"
-            if [[ -n "$output" ]]; then
-                description="$description: $output"
-            fi
-            echo "{\"complete\": 1, \"code\": $exit_code, \"description\": \"$description\"}" >&1
-        fi
-        
-        exit "$exit_code"
+
+        # Check for result
+    result=$(check_result "$submitted_job_id")
+
+    # Check if an error is registered
+    error_msg=$(echo "$result" | jq -r '.error // empty')
+
+    # check no result
+    if  [[ -z "$result" ]] || [[ "$error_msg" == "result not found" ]]; then
+        sleep "$poll_interval"
+        continue;
     fi
-    
-    sleep "$poll_interval"
+
+    # we have a result
+    if [[ -n "$error_msg" ]]; then
+        exit_code=1
+        output=$error_msg
+    else
+        exit_code=$(echo "$result" | jq -r '.status // empty')
+        output=$(echo "$result" | jq -r '.output // empty')
+
+        if [[ -z "$exit_code" ]]; then
+            exit_code=1
+            output="Invalid JSON or missing required fields"
+        fi
+    fi
+
+    echo "Job completed with exit code: $exit_code"
+    if [[ -n "$output" ]]; then
+        echo "Job output:"
+        echo "$output"
+    fi
+
+    # Report completion to Cronicle
+    echo '{"progress": 1.0}' >&1
+
+    if [[ "$exit_code" == "0" ]]; then
+        echo '{"complete": 1, "code": 0, "description": "Job completed successfully"}' >&1
+    else
+        description="Job failed with exit code $exit_code"
+        if [[ -n "$output" ]]; then
+            description="$description: $output"
+        fi
+        echo "{\"complete\": 1, \"code\": $exit_code, \"description\": \"$description\"}" >&1
+    fi
+
+    exit "$exit_code"
+
 done

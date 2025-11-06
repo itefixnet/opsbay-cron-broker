@@ -100,7 +100,7 @@ submit_job() {
       --arg ts "$ts" \
       --arg sig "$sig" \
       --argjson body "$clean_body" \
-      '$body + { "__auth": {time:$ts, sig:$sig} }')
+      '$body + { "__auth": {time:($ts|tonumber), sig:$sig} }')
 
     # ---- POST to API ----
     local response
@@ -155,12 +155,26 @@ wait_for_result() {
         local result
         result=$(auth_get "/get-result?node=${NODE_ID}&id=${JOB_ID}")
         
-        if [[ "$(echo "$result" | jq -r '.error // empty')" != "result not found" ]]; then
+        # Check if an error is registered
+        local error_msg
+        error_msg=$(echo "$result" | jq -r '.error // empty')
+
+        # Check no result or "result not found" error
+        if [[ -z "$result" ]] || [[ "$error_msg" == "result not found" ]]; then
+            sleep "$POLL_INTERVAL"
+            continue
+        fi
+
+        # We have a result - handle both error and success cases
+        if [[ -n "$error_msg" ]] && [[ "$error_msg" != "result not found" ]]; then
+            # Other error from the broker
+            echo "$result"
+            return 1
+        else
+            # Valid result
             echo "$result"
             return 0
         fi
-        
-        sleep "$POLL_INTERVAL"
     done
 }
 

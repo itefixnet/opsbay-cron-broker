@@ -10,7 +10,7 @@ A lightweight distributed job broker for centralizing cron/Cronicle operations a
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   post.sh       │    │   Broker Server  │    │   Worker Nodes  │
+│plain-job-broker │    │   Broker Server  │    │   Worker Nodes  │
 │   (Client)      │───▶│   (shell2http)   │◀───│   (worker.sh)   │
 │                 │    │                  │    │                 │
 │ • Submit jobs   │    │ • Queue mgmt     │    │ • Poll for jobs │
@@ -35,7 +35,7 @@ A lightweight distributed job broker for centralizing cron/Cronicle operations a
 - System information reporting
 - Automatic result submission
 
-### 3. Client Tool (`post.sh`)
+### 3. Client Tool (`plain-job-broker.sh`)
 - Command-line job submission
 - Result checking and monitoring  
 - Wait for completion with polling
@@ -90,19 +90,19 @@ SECRET="your-shared-secret" \
 ### Client Usage
 ```bash
 # Submit a job
-./post.sh --secret "your-secret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" \
   --target "worker1" --command "echo hello" --timeout 30
 
 # Submit and wait
-./post.sh --secret "your-secret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" \
   --target "worker1" --command "backup-db" --timeout 300 --wait
 
 # Check specific result
-./post.sh --secret "your-secret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" \
   --check-result --node "worker1" --job-id "1234567890"
 
 # List all results
-./post.sh --secret "your-secret" --url "http://server:8080" --list-results
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" --list-results
 ```
 
 ## 🔐 Security Features
@@ -160,7 +160,7 @@ jobs:
     steps:
       - name: Deploy to Production
         run: |
-          ./post.sh \
+          ./plain-job-broker.sh \
             --secret "${{ secrets.BROKER_SECRET }}" \
             --url "https://broker.company.com" \
             --target "prod-server" \

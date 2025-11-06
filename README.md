@@ -35,16 +35,19 @@ API="http://server:8080" NODE_ID="worker1" SECRET="your-secret" ./workers/worker
 
 ### 3. Submit Jobs
 ```bash
+Use the integrated `plain-job-broker.sh` client for job submission and monitoring:
+
+```bash
 # Submit a job
-./post.sh --secret "your-secret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" \
   --target "worker1" --command "echo hello" --timeout 30
 
 # Submit and wait for completion  
-./post.sh --secret "your-secret" --url "http://server:8080" \
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" \
   --target "worker1" --command "backup-db" --timeout 300 --wait
 
 # Check results
-./post.sh --secret "your-secret" --url "http://server:8080" --list-results
+./plain-job-broker.sh --secret "your-secret" --url "http://server:8080" --list-results
 ```
 
 ## 📚 Documentation
