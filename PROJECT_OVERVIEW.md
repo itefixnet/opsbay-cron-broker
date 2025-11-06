@@ -184,6 +184,7 @@ jobs:
 
 ## 📚 Documentation
 
+- **[CRONICLE_PLUGIN.md](CRONICLE_PLUGIN.md)** - Cronicle plugin setup and configuration guide
 - **[NODE_INFO.md](NODE_INFO.md)** - Node information tracking details
 - **[RESULT_DELIVERY.md](RESULT_DELIVERY.md)** - Result retrieval and monitoring
 - **[workers/README.md](workers/README.md)** - Worker configuration and deployment

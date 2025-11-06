@@ -50,6 +50,7 @@ API="http://server:8080" NODE_ID="worker1" SECRET="your-secret" ./workers/worker
 ## 📚 Documentation
 
 - **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Complete project guide with architecture, examples, and integration patterns
+- **[CRONICLE_PLUGIN.md](CRONICLE_PLUGIN.md)** - Cronicle plugin setup and configuration guide
 - **[server/README.md](server/README.md)** - Server setup, authentication, and API reference
 - **[workers/README.md](workers/README.md)** - Worker configuration and deployment  
 - **[RESULT_DELIVERY.md](RESULT_DELIVERY.md)** - Result retrieval and monitoring system
