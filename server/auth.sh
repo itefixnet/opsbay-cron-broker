@@ -136,3 +136,37 @@ verify_fetch() {
   FETCH_NODE="$node"
   return 0
 }
+
+# verify_get_auth: simpler auth for general GET endpoints (doesn't require specific node)
+verify_get_auth() {
+  local ts="${HTTP_X_TIME:-}"
+  local sig="${HTTP_X_AUTH:-}"
+  
+  # For general GET requests, use a default node or first allowed node for auth
+  local auth_node
+  auth_node="$(echo "$ALLOWED_NODES" | cut -d',' -f1)"
+  
+  if [[ -z "$ts" || -z "$sig" ]]; then
+    echo '{"error":"missing auth headers"}'
+    return 1
+  fi
+
+  # replay protection
+  local now_ts skew
+  now_ts="$(now)"
+  skew=$(( now_ts - ts ))
+  if (( skew < 0 )); then skew=$(( -skew )); fi
+  if (( skew > MAX_SKEW )); then
+    echo '{"error":"timestamp skew too large"}'
+    return 1
+  fi
+
+  local exp
+  exp="$(hmac_b64 "${ts}${auth_node}")"
+  if [[ "$exp" != "$sig" ]]; then
+    echo '{"error":"bad signature"}'
+    return 1
+  fi
+
+  return 0
+}

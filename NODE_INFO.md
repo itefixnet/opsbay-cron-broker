@@ -32,7 +32,7 @@ NODE_INFO: node=testnode hostname=worker01 os=Linux arch=x86_64 kernel=6.8.0-86-
 
 ## Worker Implementation
 
-### Bash Worker (workers/bash/worker.sh)
+### Bash Worker (workers/worker.sh)
 The bash worker collects system information using standard Unix commands:
 - `hostname` - for hostname
 - `uname -s` - for OS name  
@@ -40,13 +40,7 @@ The bash worker collects system information using standard Unix commands:
 - `uname -r` - for kernel version
 - `uptime -s` - for boot time
 
-### PowerShell Worker (workers/powershell/worker.ps1)  
-The PowerShell worker uses Windows/PowerShell specific methods:
-- `[System.Net.Dns]::GetHostName()` - for hostname
-- `Win32_OperatingSystem.Caption` - for OS name
-- `$env:PROCESSOR_ARCHITECTURE` - for architecture  
-- `Win32_OperatingSystem.Version` - for OS version
-- `Win32_OperatingSystem.LastBootUpTime` - for boot time
+This worker supports all Unix-like systems including Linux, macOS, BSD, and Windows via WSL/Cygwin/MSYS2.
 
 ## Benefits
 
@@ -57,4 +51,4 @@ The PowerShell worker uses Windows/PowerShell specific methods:
 
 ## Backward Compatibility
 
-Node information headers are optional and don't affect authentication or core functionality. Older workers without these headers will continue to work normally.
+Node information headers are optional and don't affect authentication or core functionality. The system is designed for Unix-like environments and provides comprehensive node tracking capabilities.

@@ -29,6 +29,8 @@ echo "ALLOWED_NODES=$ALLOWED_NODES"
 exec shell2http \
   -cgi \
   -port "$PORT" \
-  /queue   ./queue.sh \
-  /fetch   ./fetch.sh \
-  /result  ./result.sh
+  /queue        ./queue.sh \
+  /fetch        ./fetch.sh \
+  /result       ./result.sh \
+  /get-result   ./get-result.sh \
+  /list-results ./list-results.sh

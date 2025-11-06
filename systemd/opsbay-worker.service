@@ -1,0 +1,60 @@
+[Unit]
+Description=OpsBay Worker Node
+Documentation=https://github.com/itefixnet/opsbay-cron-broker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/opsbay-cron-broker
+ExecStart=/opt/opsbay-cron-broker/workers/worker.sh
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+# Environment variables
+Environment=API=http://broker.example.com:8080
+Environment=NODE_ID=worker-node-1
+Environment=SECRET=your-shared-secret-here
+Environment=POLL_INTERVAL=5
+Environment=MAX_RETRIES=3
+
+# Security settings
+User=opsbay
+Group=opsbay
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHostname=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+RestrictNamespaces=true
+
+# Allow writing to working directory and temp files
+ReadWritePaths=/opt/opsbay-cron-broker
+ReadWritePaths=/tmp
+
+# Allow network access
+PrivateNetwork=false
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=opsbay-worker
+
+# Resource limits
+MemoryAccounting=true
+MemoryMax=512M
+TasksMax=100
+
+[Install]
+WantedBy=multi-user.target

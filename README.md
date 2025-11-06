@@ -1,41 +1,75 @@
 # opsbay-cron-broker
 
-**opsbay-cron-broker** is primarily designed to support the **Jobs** feature of [**OpsBay**](https://opsbay.com ) using [**Cronicle**](https://cronicle.org).
+A lightweight, Unix-focused distributed job broker for centralizing cron/Cronicle operations across multiple nodes.
 
-It acts as a lightweight, distributed job broker that lets Cronicle delegate job execution to multiple authenticated worker nodes.
+**Perfect for**: Infrastructure automation, CI/CD pipelines, distributed task execution, and OpsBay/Cronicle integration.
 
-However, **opsbay-cron-broker can also be used independently** as a standalone, secure cron/job dispatching system without OpsBay or Cronicle.
+## ✨ Key Features
 
----
+- **🔐 Secure**: HMAC SHA-256 authentication with node authorization
+- **📊 Observable**: Node information tracking and comprehensive result monitoring  
+- **🛠️ Simple**: Bash-based workers, shell2http server, minimal dependencies
+- **🔄 Complete**: Job submission → execution → result retrieval workflow
+- **🖥️ Unix-Ready**: Linux, macOS, BSD, WSL support
+- **⚡ Lightweight**: No heavy runtimes, just standard Unix tools
 
-A tiny, **shell2http**-based job broker for centralizing cron/Cronicle operations across **multiple nodes**, with **HMAC authentication**, **node information headers**, and an **allowed node list**.
+## 🚀 Quick Start
 
-- Central API (`/queue`, `/fetch`, `/result`)
-- Workers poll, execute, and return results  
-- **Node information tracking** (hostname, OS, architecture, kernel, uptime)
-- Mixed OS support (Linux, macOS, BSD, Windows via Git Bash/Cygwin/MSYS2/WSL)
-- No heavy runtime: just `shell2http`, `jq`, `openssl`, `curl`/PowerShell
-
-## Endpoints
-
-- `POST /queue` — Cronicle or external systems enqueue a job (targeted to a node)
-- `GET  /fetch?node=<node>` — Worker fetches next job for `<node>`
-- `POST /result` — Worker posts execution result
-
-All endpoints require HMAC auth (see `server/README.md`).
-
-## Quick start
-
+### 1. Server Setup
 ```bash
-# on the server
-cd server
+git clone https://github.com/itefixnet/opsbay-cron-broker.git
+cd opsbay-cron-broker/server
 cp config.example.env .env
-# edit .env: set SECRET and ALLOWED_NODES, optionally PORT and DIRS
+vim .env  # Set SECRET and ALLOWED_NODES
 ./run.sh
 ```
 
-On each node, run the worker (bash or PowerShell). See `workers/README.md`.
+### 2. Worker Setup
+```bash
+# On each worker node
+API="http://server:8080" NODE_ID="worker1" SECRET="your-secret" ./workers/worker.sh
+```
 
-## License
+### 3. Submit Jobs
+```bash
+# Submit a job
+./post.sh --secret "your-secret" --url "http://server:8080" \
+  --target "worker1" --command "echo hello" --timeout 30
 
-BSD 2-Clause — see LICENSE.
+# Submit and wait for completion  
+./post.sh --secret "your-secret" --url "http://server:8080" \
+  --target "worker1" --command "backup-db" --timeout 300 --wait
+
+# Check results
+./post.sh --secret "your-secret" --url "http://server:8080" --list-results
+```
+
+## 📚 Documentation
+
+- **[PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)** - Complete project guide with architecture, examples, and integration patterns
+- **[server/README.md](server/README.md)** - Server setup, authentication, and API reference
+- **[workers/README.md](workers/README.md)** - Worker configuration and deployment  
+- **[RESULT_DELIVERY.md](RESULT_DELIVERY.md)** - Result retrieval and monitoring system
+- **[NODE_INFO.md](NODE_INFO.md)** - Node information tracking details
+- **[Docker.md](Docker.md)** - Container deployment instructions
+
+## 🎯 Use Cases
+
+- **Infrastructure Management**: Deploy configs, run maintenance, collect logs
+- **DevOps & CI/CD**: Application deployment, database migrations, test execution  
+- **Data Processing**: ETL pipelines, report generation, batch jobs
+- **OpsBay Integration**: Designed for [OpsBay](https://opsbay.com) and [Cronicle](https://cronicle.org)
+
+## 🔗 API Endpoints
+
+- `POST /queue` — Submit jobs for execution
+- `GET /fetch?node=<node>` — Workers fetch jobs
+- `POST /result` — Workers submit results
+- `GET /get-result?node=<node>&id=<id>` — Retrieve specific results
+- `GET /list-results` — List all available results
+
+*All endpoints use HMAC SHA-256 authentication*
+
+## 📄 License
+
+BSD 2-Clause — see [LICENSE](LICENSE).
