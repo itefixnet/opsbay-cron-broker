@@ -187,9 +187,6 @@ while true; do
     # Check for result
     result=$(check_result "$submitted_job_id")
 
-        # Check for result
-    result=$(check_result "$submitted_job_id")
-
     # Check if an error is registered
     error_msg=$(echo "$result" | jq -r '.error // empty')
 
